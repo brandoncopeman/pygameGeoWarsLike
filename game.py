@@ -1,6 +1,6 @@
 import pygame
 from settings import *
-from player import Player
+from player import Player 
 from enemy import Enemy 
 from gameover import show_game_over_screen
 
@@ -33,14 +33,29 @@ def start_game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:  # Left mouse button
+                    mouse_pos = pygame.mouse.get_pos()
+                    player.shoot(mouse_pos)
 
         # Get the state of keys
         keys = pygame.key.get_pressed()
 
         # Update the player and enemies
         player.update(keys)  # Manually pass the keys to the player's update method
+        player.projectiles.update()
+        
         for enemy in enemies:
             enemy.update()  # No need to pass keys for enemies
+        #variable for shooting enemies    
+        hits = pygame.sprite.groupcollide(player.projectiles, enemies, True, True)
+ # Process each collision
+        for projectile, hit_enemies in hits.items():
+            # Remove the projectile
+            projectile.kill()
+            # Remove each enemy that was hit
+            for enemy in hit_enemies:
+                enemy.kill()
 
         # Check for collisions between the player and enemies
         if pygame.sprite.spritecollideany(player, enemies):
@@ -58,6 +73,7 @@ def start_game():
 
         # Draw all sprites
         all_sprites.draw(screen)
+        player.projectiles.draw(screen)  # Draw projectiles separately
 
         # Draw the timer on the screen
         screen.blit(timer_text, timer_rect)

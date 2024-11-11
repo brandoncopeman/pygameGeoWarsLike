@@ -14,6 +14,7 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()  # Exit the program
+                
 
 # Start the game
 main()
