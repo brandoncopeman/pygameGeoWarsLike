@@ -12,14 +12,24 @@ class Player(pygame.sprite.Sprite):
         self.speed = 5
 
     def update(self, keys):
+        # Track movement in both x and y directions
+        dx, dy = 0, 0
         if keys[pygame.K_a]:
-            self.rect.x -= self.speed
+            dx -= self.speed
         if keys[pygame.K_d]:
-            self.rect.x += self.speed
+            dx += self.speed
         if keys[pygame.K_w]:
-            self.rect.y -= self.speed
+            dy -= self.speed
         if keys[pygame.K_s]:
-            self.rect.y += self.speed
+            dy += self.speed
+            
+          # Normalize diagonal movement to maintain consistent speed
+        if dx != 0 and dy != 0:
+            dx *= 0.7071  # Approximately 1/sqrt(2)
+            dy *= 0.7071
+             # Update the player's position
+        self.rect.x += dx
+        self.rect.y += dy
 
         # Keep the player within bounds
         self.rect.x = max(0, min(self.rect.x, SCREEN_WIDTH - self.rect.width))
