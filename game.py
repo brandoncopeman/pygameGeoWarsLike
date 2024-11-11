@@ -1,14 +1,18 @@
+import random
 import pygame
 from settings import *
 from player import Player 
 from enemy import Enemy 
 from gameover import show_game_over_screen
+from Particle import Particle
 
 def start_game():
     # Set up sprite groups
     all_sprites = pygame.sprite.Group()
     enemies = pygame.sprite.Group()
     players = pygame.sprite.Group()  # New player group
+    particles = pygame.sprite.Group()  # Group for particles
+
 
     # Create player
     player = Player()
@@ -47,15 +51,28 @@ def start_game():
         
         for enemy in enemies:
             enemy.update()  # No need to pass keys for enemies
-        #variable for shooting enemies    
-        hits = pygame.sprite.groupcollide(player.projectiles, enemies, True, True)
- # Process each collision
+            
+        particles.update()
+            
+        # Check for collisions between projectiles and enemies
+        hits = pygame.sprite.groupcollide(player.projectiles, enemies, False, False)
+        
+        # Process each collision and create particles for each collision
         for projectile, hit_enemies in hits.items():
             # Remove the projectile
             projectile.kill()
             # Remove each enemy that was hit
             for enemy in hit_enemies:
                 enemy.kill()
+            for _ in range(10):  # Number of particles in each burst
+                    particle = Particle(
+                        pos=enemy.rect.center,
+                        color=(255, 0, 0),  # Red color for the effect
+                        size=random.randint(3, 6),  # Random size for variety
+                        lifespan=30  # Lifespan of each particle
+                    )
+                    particles.add(particle)
+
 
         # Check for collisions between the player and enemies
         if pygame.sprite.spritecollideany(player, enemies):
@@ -74,6 +91,9 @@ def start_game():
         # Draw all sprites
         all_sprites.draw(screen)
         player.projectiles.draw(screen)  # Draw projectiles separately
+        particles.draw(screen)
+
+    
 
         # Draw the timer on the screen
         screen.blit(timer_text, timer_rect)
