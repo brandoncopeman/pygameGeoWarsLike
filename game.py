@@ -8,6 +8,7 @@ from Particle import Particle
 from titlescreen import show_title_screen
 from instructions import show_instructions_screen
 from pickupItems import PickupItem
+from specialProjectiles import specialProjectile
 
 def start_game():
     show_title_screen()  # Show the title screen before starting the game
@@ -18,6 +19,7 @@ def start_game():
     players = pygame.sprite.Group()  # New player group
     particles = pygame.sprite.Group()  # Group for particles
     pickups = pygame.sprite.Group()  # Group for pickup items
+    specialPro = pygame.sprite.Group()  # Group for special projectiles
 
     
     # Pre-render the tiled floor once
@@ -63,9 +65,10 @@ def start_game():
                     if special_projectile_ready:  # Fire special projectile if available
                         player.shoot(mouse_pos, special=True)
                         special_projectile_ready = False  # Use up the special projectile
+                        special_shoot_sound.play()
                     else:
                         player.shoot(mouse_pos)  # Fire normal projectile
-                    shoot_sound.play()
+                        shoot_sound.play()
 
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:  # Check for Escape key
@@ -76,14 +79,21 @@ def start_game():
 
         # Update sprites
         player.update(keys)  # Manually pass the keys to the player's update method
-        player.projectiles.update()
         
         for enemy in enemies:
             enemy.update()  # No need to pass keys for enemies
             
         particles.update()
         pickups.update()
+        
+        for projectile in player.projectiles:
+            if isinstance(projectile, specialProjectile):
+                projectile.update(enemies)  # Pass enemies for special projectiles
+            else:
+                 projectile.update()  # Call regular update for normal projectiles
 
+
+        
         
           # Check if 5 seconds have passed to spawn more enemies
         current_time = pygame.time.get_ticks()
@@ -158,6 +168,8 @@ def start_game():
         all_sprites.draw(screen)
         player.projectiles.draw(screen)  # Draw projectiles separately
         particles.draw(screen)
+        specialPro.draw(screen)  # Draw special projectiles
+                
         
 
     

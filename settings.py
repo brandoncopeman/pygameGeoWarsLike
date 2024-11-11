@@ -22,6 +22,8 @@ sounds_folder = "assets/sounds"
 
 death_sound = pygame.mixer.Sound(os.path.join(sounds_folder, "dead.wav"))
 shoot_sound = pygame.mixer.Sound(os.path.join(sounds_folder, "shoot.wav"))
+special_shoot_sound = pygame.mixer.Sound(os.path.join(sounds_folder, "specialshoot.wav"))
+
 
 # Initialize the font module
 pygame.font.init()
