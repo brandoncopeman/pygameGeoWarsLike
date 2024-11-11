@@ -19,8 +19,7 @@ pygame.display.set_caption("Simple Game - Vampire Survivors Style")
 # Load sounds
 pygame.mixer.init()
 sounds_folder = "assets/sounds"
-pygame.mixer.music.load(os.path.join(sounds_folder, "bg1.wav"))
-pygame.mixer.music.set_volume(0.7)
+
 death_sound = pygame.mixer.Sound(os.path.join(sounds_folder, "dead.wav"))
 shoot_sound = pygame.mixer.Sound(os.path.join(sounds_folder, "shoot.wav"))
 

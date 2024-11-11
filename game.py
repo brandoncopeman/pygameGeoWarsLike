@@ -5,9 +5,10 @@ from player import Player
 from enemy import Enemy 
 from gameover import show_game_over_screen
 from Particle import Particle
+from titlescreen import show_title_screen
 
 def start_game():
-    
+    show_title_screen()  # Show the title screen before starting the game
     # Set up sprite groups
     all_sprites = pygame.sprite.Group()
     enemies = pygame.sprite.Group()
@@ -39,6 +40,8 @@ def start_game():
     running = True
     clock = pygame.time.Clock()
     
+    pygame.mixer.music.load(os.path.join(sounds_folder, "bg1.wav"))
+    pygame.mixer.music.set_volume(0.7)
     pygame.mixer.music.play(-1)  # Play background music on loop
 
     while running:
