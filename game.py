@@ -33,7 +33,8 @@ def start_game():
     start_time = pygame.time.get_ticks()
     last_enemy_spawn_time = start_time
     enemies_to_spawn = initial_enemy_count  # Start with 5 enemies for the first spawn
-
+    kills = 0
+    
     # Game loop
     running = True
     clock = pygame.time.Clock()
@@ -90,6 +91,7 @@ def start_game():
                     # Destroy both projectile and enemy on collision
                     projectile.kill()
                     enemy.kill()
+                    kills += 1 
                     death_sound.play()  # Play death sound
 
 
@@ -117,7 +119,12 @@ def start_game():
         
         # Render the timer
         timer_text = font.render(f"Time Survived: {elapsed_time} seconds", True, BLACK)
+        kills_text = font.render(f"Enemies Killed: {kills}", True, BLACK)
         timer_rect = timer_text.get_rect(center=(SCREEN_WIDTH // 2, 20))
+        kills_rect = kills_text.get_rect(center=(SCREEN_WIDTH // 2, 50))  # Display kills below the timer
+
+        
+        
 
        
 
@@ -131,6 +138,8 @@ def start_game():
 
         # Draw the timer on the screen
         screen.blit(timer_text, timer_rect)
+        screen.blit(kills_text, kills_rect)
+
 
         # Refresh the screen
         pygame.display.flip()
@@ -139,5 +148,5 @@ def start_game():
         clock.tick(FPS)
 
     # Show the game over screen
-    show_game_over_screen(elapsed_time, clock)
+    show_game_over_screen(elapsed_time, clock, kills)
 
