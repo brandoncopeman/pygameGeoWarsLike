@@ -13,7 +13,6 @@ def start_game():
     players = pygame.sprite.Group()  # New player group
     particles = pygame.sprite.Group()  # Group for particles
 
-
     # Create player
     player = Player()
     all_sprites.add(player)
@@ -45,7 +44,7 @@ def start_game():
         # Get the state of keys
         keys = pygame.key.get_pressed()
 
-        # Update the player and enemies
+        # Update sprites
         player.update(keys)  # Manually pass the keys to the player's update method
         player.projectiles.update()
         
@@ -54,30 +53,31 @@ def start_game():
             
         particles.update()
             
-        # Check for collisions between projectiles and enemies
-        hits = pygame.sprite.groupcollide(player.projectiles, enemies, False, False)
-        
-        # Process each collision and create particles for each collision
-        for projectile, hit_enemies in hits.items():
-            # Remove the projectile
-            projectile.kill()
-            # Remove each enemy that was hit
-            for enemy in hit_enemies:
-                enemy.kill()
-            for _ in range(10):  # Number of particles in each burst
-                    particle = Particle(
-                        pos=enemy.rect.center,
-                        color=(255, 0, 0),  # Red color for the effect
-                        size=random.randint(3, 6),  # Random size for variety
-                        lifespan=30  # Lifespan of each particle
-                    )
-                    particles.add(particle)
+        # Check for collisions between each projectile and enemy
+        for projectile in player.projectiles:
+            for enemy in enemies:
+                if pygame.sprite.collide_mask(projectile, enemy):  # Pixel-perfect collision check
+                    # Destroy both projectile and enemy on collision
+                    projectile.kill()
+                    enemy.kill()
 
+                    # Optional: Add particle effect or score increment here
+                    for _ in range(10):  # Example: Add particles
+                        particle = Particle(
+                            pos=enemy.rect.center,
+                            color=(255, 0, 0),  # Red for effect
+                            size=random.randint(3, 6),
+                            lifespan=30
+                        )
+                        particles.add(particle)
+                    break  # Exit inner loop to avoid redundant checks for this projectile
 
-        # Check for collisions between the player and enemies
-        if pygame.sprite.spritecollideany(player, enemies):
-            running = False  # End the game if a collision is detected
-
+        # Check for collisions between the player and enemies pixel perfect
+        for enemy in enemies:
+            if pygame.sprite.collide_mask(player, enemy):
+                running = False  # End the game if a collision is detected
+                break  # Exit the loop on collision
+            
         # Calculate the elapsed time
         elapsed_time = (pygame.time.get_ticks() - start_time) // 1000  # Convert to seconds
 

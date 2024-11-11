@@ -5,8 +5,9 @@ from settings import *
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, x, y, angle):
         super().__init__()
-        self.image = pygame.Surface((10, 10))
-        self.image.fill(BLACK)
+        self.image = pygame.image.load("assets/projectile.png").convert_alpha()  # Load with transparency
+        self.image = pygame.transform.scale(self.image, (50,50))
+        self.mask = pygame.mask.from_surface(self.image)  # Create mask for pixel-perfect collision
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = 10
 

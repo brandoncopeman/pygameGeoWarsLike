@@ -5,8 +5,9 @@ from settings import *
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.Surface((30, 30))
-        self.image.fill(RED)
+        self.image = pygame.image.load("assets/scream.png").convert_alpha()  # Load with transparency
+        self.image = pygame.transform.scale(self.image, (150,150))
+        self.mask = pygame.mask.from_surface(self.image)  # Create a mask from the player image pixel perfect
         self.rect = self.image.get_rect()
 
         # Spawn randomly off-screen on any side
