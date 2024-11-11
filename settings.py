@@ -2,8 +2,8 @@ import random
 import pygame
 import os
 # Constants
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 1600
+SCREEN_HEIGHT = 900
 FPS = 60
 
 # Colors
@@ -16,11 +16,19 @@ GREEN = (0, 255, 0)
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
 pygame.display.set_caption("Simple Game - Vampire Survivors Style")
 
+# Load sounds
+pygame.mixer.init()
+sounds_folder = "assets/sounds"
+pygame.mixer.music.load(os.path.join(sounds_folder, "bg1.wav"))
+pygame.mixer.music.set_volume(0.7)
+death_sound = pygame.mixer.Sound(os.path.join(sounds_folder, "dead.wav"))
+shoot_sound = pygame.mixer.Sound(os.path.join(sounds_folder, "shoot.wav"))
+
 # Initialize the font module
 pygame.font.init()
 font = pygame.font.Font(None, 36)  # Use the default font and set the size to 36
 
-tilesFolder = "tiles"
+tilesFolder = "assets/tiles"
 tile_images = []
 for filename in os.listdir(tilesFolder):
     if filename.endswith(".png"):  # Assuming tile images are in PNG format

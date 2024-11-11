@@ -7,6 +7,7 @@ from gameover import show_game_over_screen
 from Particle import Particle
 
 def start_game():
+    
     # Set up sprite groups
     all_sprites = pygame.sprite.Group()
     enemies = pygame.sprite.Group()
@@ -21,21 +22,25 @@ def start_game():
     all_sprites.add(player)
     players.add(player)  # Add player to the player group
 
-    # Create some enemies
-    for _ in range(5):  # Create 5 enemies
+      # Create initial enemies
+    initial_enemy_count = 5
+    for _ in range(initial_enemy_count):
         enemy = Enemy()
         all_sprites.add(enemy)
         enemies.add(enemy)
 
     # Track the start time of the game
     start_time = pygame.time.get_ticks()
+    last_enemy_spawn_time = start_time
+    enemies_to_spawn = initial_enemy_count  # Start with 5 enemies for the first spawn
 
     # Game loop
     running = True
     clock = pygame.time.Clock()
+    
+    pygame.mixer.music.play(-1)  # Play background music on loop
 
     while running:
-        
         # Draw the tiled floor first
         screen.blit(floor_surface, (0, 0))
         # Event handling
@@ -46,6 +51,8 @@ def start_game():
                 if event.button == 1:  # Left mouse button
                     mouse_pos = pygame.mouse.get_pos()
                     player.shoot(mouse_pos)
+                    shoot_sound.play()  # Play death sound
+
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:  # Check for Escape key
                     running = False  # End the game
@@ -61,6 +68,20 @@ def start_game():
             enemy.update()  # No need to pass keys for enemies
             
         particles.update()
+        
+          # Check if 5 seconds have passed to spawn more enemies
+        current_time = pygame.time.get_ticks()
+        if current_time - last_enemy_spawn_time >= 5000:  # 5000 milliseconds = 5 seconds
+            # Spawn the specified number of new enemies
+            for _ in range(enemies_to_spawn):
+                new_enemy = Enemy()
+                all_sprites.add(new_enemy)
+                enemies.add(new_enemy)
+            
+            # Update the timer and increase the number of enemies to spawn by 5
+            last_enemy_spawn_time = current_time
+            enemies_to_spawn += 5  # Increase the spawn count by 5 for the next interval
+
             
         # Check for collisions between each projectile and enemy
         for projectile in player.projectiles:
@@ -69,6 +90,8 @@ def start_game():
                     # Destroy both projectile and enemy on collision
                     projectile.kill()
                     enemy.kill()
+                    death_sound.play()  # Play death sound
+
 
                     # Optional: Add particle effect or score increment here
                     for _ in range(10):  # Example: Add particles
