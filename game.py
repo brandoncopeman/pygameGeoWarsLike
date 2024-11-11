@@ -6,9 +6,11 @@ from enemy import Enemy
 from gameover import show_game_over_screen
 from Particle import Particle
 from titlescreen import show_title_screen
+from instructions import show_instructions_screen
 
 def start_game():
     show_title_screen()  # Show the title screen before starting the game
+    show_instructions_screen()  # Show the instructions screen before starting the game
     # Set up sprite groups
     all_sprites = pygame.sprite.Group()
     enemies = pygame.sprite.Group()

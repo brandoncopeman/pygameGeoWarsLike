@@ -75,4 +75,3 @@ def show_title_screen():
         pygame.display.flip()
         pygame.time.Clock().tick(FPS)
         
-    pygame.mixer.music.stop()
