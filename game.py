@@ -7,6 +7,7 @@ from gameover import show_game_over_screen
 from Particle import Particle
 from titlescreen import show_title_screen
 from instructions import show_instructions_screen
+from pickupItems import PickupItem
 
 def start_game():
     show_title_screen()  # Show the title screen before starting the game
@@ -16,6 +17,8 @@ def start_game():
     enemies = pygame.sprite.Group()
     players = pygame.sprite.Group()  # New player group
     particles = pygame.sprite.Group()  # Group for particles
+    pickups = pygame.sprite.Group()  # Group for pickup items
+
     
     # Pre-render the tiled floor once
     floor_surface = draw_tiled_floor()
@@ -37,7 +40,8 @@ def start_game():
     last_enemy_spawn_time = start_time
     enemies_to_spawn = initial_enemy_count  # Start with 5 enemies for the first spawn
     kills = 0
-    
+    special_projectile_ready = False  # Track if player has a special projectile
+
     # Game loop
     running = True
     clock = pygame.time.Clock()
@@ -54,10 +58,14 @@ def start_game():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
                 if event.button == 1:  # Left mouse button
-                    mouse_pos = pygame.mouse.get_pos()
-                    player.shoot(mouse_pos)
-                    shoot_sound.play()  # Play death sound
+                    if special_projectile_ready:  # Fire special projectile if available
+                        player.shoot(mouse_pos, special=True)
+                        special_projectile_ready = False  # Use up the special projectile
+                    else:
+                        player.shoot(mouse_pos)  # Fire normal projectile
+                    shoot_sound.play()
 
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:  # Check for Escape key
@@ -74,6 +82,8 @@ def start_game():
             enemy.update()  # No need to pass keys for enemies
             
         particles.update()
+        pickups.update()
+
         
           # Check if 5 seconds have passed to spawn more enemies
         current_time = pygame.time.get_ticks()
@@ -109,8 +119,19 @@ def start_game():
                             lifespan=30
                         )
                         particles.add(particle)
+                        
+                    # Drop a pickup every 10 kills
+                    if kills % 10 == 0:
+                        pickup = PickupItem(enemy.rect.center)
+                        pickups.add(pickup)
+                        all_sprites.add(pickup)    
                     break  # Exit inner loop to avoid redundant checks for this projectile
-
+         # Check for pickup collection by the player
+        if pygame.sprite.spritecollideany(player, pickups):
+            for pickup in pygame.sprite.spritecollide(player, pickups, True):
+                special_projectile_ready = True  # Enable special projectile on pickup
+                pickup.kill()  # Remove pickup item from screen
+                            
         # Check for collisions between the player and enemies pixel perfect
         for enemy in enemies:
             if pygame.sprite.collide_mask(player, enemy):

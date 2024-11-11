@@ -2,6 +2,7 @@ import pygame
 import math
 from projectiles import Projectile
 from settings import GREEN, SCREEN_WIDTH, SCREEN_HEIGHT
+from specialProjectiles import specialProjectile
 
 
 class Player(pygame.sprite.Sprite):
@@ -41,12 +42,14 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = max(0, min(self.rect.x, SCREEN_WIDTH - self.rect.width))
         self.rect.y = max(0, min(self.rect.y, SCREEN_HEIGHT - self.rect.height))
         
-    def shoot(self, mouse_pos):
+    def shoot(self, mouse_pos, special=False):
         # Calculate the angle from the player to the mouse position
         dx = mouse_pos[0] - self.rect.centerx
         dy = mouse_pos[1] - self.rect.centery
         angle = math.atan2(dy, dx)
-
+        if special:
+            projectile = specialProjectile(self.rect.centerx, self.rect.centery, angle)
         # Create a new projectile moving in the direction of the mouse position
-        projectile = Projectile(self.rect.centerx, self.rect.centery, angle)
+        else:
+            projectile = Projectile(self.rect.centerx, self.rect.centery, angle)
         self.projectiles.add(projectile)
