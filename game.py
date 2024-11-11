@@ -12,6 +12,9 @@ def start_game():
     enemies = pygame.sprite.Group()
     players = pygame.sprite.Group()  # New player group
     particles = pygame.sprite.Group()  # Group for particles
+    
+    # Pre-render the tiled floor once
+    floor_surface = draw_tiled_floor()
 
     # Create player
     player = Player()
@@ -32,6 +35,9 @@ def start_game():
     clock = pygame.time.Clock()
 
     while running:
+        
+        # Draw the tiled floor first
+        screen.blit(floor_surface, (0, 0))
         # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -40,6 +46,9 @@ def start_game():
                 if event.button == 1:  # Left mouse button
                     mouse_pos = pygame.mouse.get_pos()
                     player.shoot(mouse_pos)
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:  # Check for Escape key
+                    running = False  # End the game
 
         # Get the state of keys
         keys = pygame.key.get_pressed()
@@ -81,17 +90,19 @@ def start_game():
         # Calculate the elapsed time
         elapsed_time = (pygame.time.get_ticks() - start_time) // 1000  # Convert to seconds
 
+
+        
         # Render the timer
         timer_text = font.render(f"Time Survived: {elapsed_time} seconds", True, BLACK)
         timer_rect = timer_text.get_rect(center=(SCREEN_WIDTH // 2, 20))
 
-        # Fill the screen with white
-        screen.fill(WHITE)
+       
 
         # Draw all sprites
         all_sprites.draw(screen)
         player.projectiles.draw(screen)  # Draw projectiles separately
         particles.draw(screen)
+        
 
     
 
