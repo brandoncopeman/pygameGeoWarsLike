@@ -3,7 +3,7 @@ import math
 from projectiles import Projectile
 from settings import GREEN, SCREEN_WIDTH, SCREEN_HEIGHT
 from specialProjectiles import specialProjectile
-
+from alternateSpecialProjectiles import AlternateSpecialProjectiles
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -47,7 +47,9 @@ class Player(pygame.sprite.Sprite):
         dx = mouse_pos[0] - self.rect.centerx
         dy = mouse_pos[1] - self.rect.centery
         angle = math.atan2(dy, dx)
-        if special:
+        if special == "alternate":
+            projectile = AlternateSpecialProjectiles(self.rect.centerx, self.rect.centery, angle)
+        elif special:
             projectile = specialProjectile(self.rect.centerx, self.rect.centery, angle)
         # Create a new projectile moving in the direction of the mouse position
         else:

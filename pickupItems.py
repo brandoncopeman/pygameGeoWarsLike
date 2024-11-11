@@ -7,21 +7,29 @@ class PickupItem(pygame.sprite.Sprite):
     def __init__(self, position):
         super().__init__()
         
-        # Define the base item image
+        # Determine color with a 50/50 chance
+        if random.choice([True, False]):
+            self.color = (255, 0, 255)  # Purple color for special effect
+            self.is_purple = True
+        else:
+            self.color = (0, 255, 255)  # Cyan color for normal effect
+            self.is_purple = False
+
+        # Base item image
         self.base_image = pygame.Surface((30, 30), pygame.SRCALPHA)
-        self.base_image.fill((0, 255, 255))  # Cyan color for visibility
+        self.base_image.fill(self.color)
         self.rect = self.base_image.get_rect(center=position)
         
         # Shine overlay (a white gradient to transparent)
-        self.shine_overlay = pygame.Surface((40, 30), pygame.SRCALPHA)  # Slightly larger for diagonal effect
+        self.shine_overlay = pygame.Surface((40, 30), pygame.SRCALPHA)
         for x in range(self.shine_overlay.get_width()):
             for y in range(self.shine_overlay.get_height()):
-                alpha = max(0, 255 - (x + y) * 5)  # Adjust 5 for sharper or softer gradient
+                alpha = max(0, 255 - (x + y) * 5)
                 self.shine_overlay.set_at((x, y), (255, 255, 255, alpha))
         
         # Shine position variables
-        self.shine_pos = -self.rect.width  # Start the shine off the left side
-        self.shine_speed = 2  # Speed at which the shine moves
+        self.shine_pos = -self.rect.width
+        self.shine_speed = 2
 
         # Set the initial image to base_image (with no shine)
         self.image = self.base_image.copy()

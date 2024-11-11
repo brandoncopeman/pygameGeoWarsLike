@@ -1,5 +1,6 @@
 import random
 import pygame
+from alternateSpecialProjectiles import AlternateSpecialProjectiles
 from settings import *
 from player import Player 
 from enemy import Enemy 
@@ -20,6 +21,8 @@ def start_game():
     particles = pygame.sprite.Group()  # Group for particles
     pickups = pygame.sprite.Group()  # Group for pickup items
     specialPro = pygame.sprite.Group()  # Group for special projectiles
+    altPro = pygame.sprite.Group()  # Group for special projectiles
+
 
     
     # Pre-render the tiled floor once
@@ -43,6 +46,7 @@ def start_game():
     enemies_to_spawn = initial_enemy_count  # Start with 5 enemies for the first spawn
     kills = 0
     special_projectile_ready = False  # Track if player has a special projectile
+    use_alternate_special_projectile = False
 
     # Game loop
     running = True
@@ -66,6 +70,14 @@ def start_game():
                         player.shoot(mouse_pos, special=True)
                         special_projectile_ready = False  # Use up the special projectile
                         special_shoot_sound.play()
+                    if use_alternate_special_projectile:  # Check if alternate special projectile is enabled
+                        alt_proj = AlternateSpecialProjectiles(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+                        all_sprites.add(alt_proj)
+                        player.projectiles.add(alt_proj)
+                        use_alternate_special_projectile = False
+                        for enemy in enemies:
+                            enemy.kill()  # Destroy all enemies on special projectile use
+                        special_shoot_sound.play()
                     else:
                         player.shoot(mouse_pos)  # Fire normal projectile
                         shoot_sound.play()
@@ -86,14 +98,25 @@ def start_game():
         particles.update()
         pickups.update()
         
+             # Update each projectile individually based on its type
         for projectile in player.projectiles:
             if isinstance(projectile, specialProjectile):
-                projectile.update(enemies)  # Pass enemies for special projectiles
+                projectile.update(enemies)  # Only pass `enemies` to special projectiles that need it
+            elif isinstance(projectile, AlternateSpecialProjectiles):
+                projectile.update()  # No enemies argument needed
             else:
-                 projectile.update()  # Call regular update for normal projectiles
+                projectile.update()  # Regular projectiles don't need `enemies` either
 
-
-        
+        for pickup in pygame.sprite.spritecollide(player, pickups, True):
+            pickup.kill()  # Remove the pickup item from screen
+            
+            # Check if the pickup is purple to determine the special projectile type
+            if pickup.is_purple:
+                use_alternate_special_projectile = True
+            else:
+                use_alternate_special_projectile = False
+            # Set special projectile as ready to use
+            special_projectile_ready = True
         
           # Check if 5 seconds have passed to spawn more enemies
         current_time = pygame.time.get_ticks()
@@ -169,6 +192,7 @@ def start_game():
         player.projectiles.draw(screen)  # Draw projectiles separately
         particles.draw(screen)
         specialPro.draw(screen)  # Draw special projectiles
+        altPro.draw(screen)  # Draw special projectiles
                 
         
 
